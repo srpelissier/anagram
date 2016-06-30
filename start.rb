@@ -7,7 +7,7 @@ end
 
 @wordlist = makearray "./data/wordlist.txt"
 
-while endgame == false
+while endgame == false do
 	newword = false
 	def getletters(n)
 		alphabet = ("a" .. "z").to_a
@@ -43,7 +43,7 @@ while endgame == false
 
 	#printletters(baseletters)
 
-	while newword == false
+	while newword == false do
 
 		score = 0
 		@check = true
@@ -79,8 +79,23 @@ while endgame == false
 
 		printranks top10
 
-		newword = false
-		endgame = true
+		puts "(C)ontinue/(n)ew word?"
+
+		resp = gets.chomp
+		case resp
+		when "C", "c", "\n"
+			newword = false
+		when "N", "n"
+			newword = true
+		else
+			newword = true
+			endgame = true
+		end
+
 	end
 
+
+
 end
+
+puts "Bye"
