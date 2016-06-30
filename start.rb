@@ -22,12 +22,12 @@ while endgame == false do
 	top10 = []
 
 	def printranks(ranklist)
-
+		puts
 		ranklist.each_index { |idx|
 			if idx == 9
-				p "Rank ##{idx+1} -> Score:#{ranklist[idx][0]} Word:#{ranklist[idx][1]}"
+				puts "Rank ##{idx+1} -> Score:#{ranklist[idx][0]} Word:#{ranklist[idx][1]}"
 			else
-				p "Rank #0#{idx+1} -> Score:#{ranklist[idx][0]} Word:#{ranklist[idx][1]}"
+				puts "Rank #0#{idx+1} -> Score:#{ranklist[idx][0]} Word:#{ranklist[idx][1]}"
 			end
 		}
 	end
@@ -35,7 +35,7 @@ while endgame == false do
 	baseletters = getletters(15)
 
 	def printletters(letters)
-		p "Letters: #{letters.join(" ")}"
+		puts "\nLetters: #{letters.join(" ")}\n"
 	end
 
 	while newword == false do
@@ -43,13 +43,13 @@ while endgame == false do
 		score = 0
 		@check = true
 		printletters(baseletters)
-		puts "Enter a word"
+		puts "\nEnter a word: "
 		word = gets.chomp
 
 		word.each_char { |letter|
 			if !baseletters.include? letter
 				@check = false
-				p "#{letter} not found."
+				puts "\n#{letter} not found."
 			end
 		}
 
@@ -65,14 +65,12 @@ while endgame == false do
 			score = word.size
 		elsif @check == true
 			@check = false
-			p "Not in dic"
+			puts "\n#{word} unknown"
 		end
 
 		if @check == true
 			top10 << [score,word]
-			p top10
 			top10.sort_by! { |rank| rank[0] }
-			p top10
 			top10 = top10.uniq { |rank| rank[1] }
 			top10.reverse!
 			top10 = top10.take(10) if top10.length > 10
@@ -80,13 +78,13 @@ while endgame == false do
 
 		printranks top10
 
-		puts "(C)ontinue/(n)ew word?"
+		puts "\nNew (T)ry - New (L)etters?\n"
 
 		resp = gets.chomp
 		case resp
-		when "C", "c"
+		when "T", "t"
 			newword = false
-		when "N", "n"
+		when "L", "l"
 			newword = true
 		else
 			newword = true
