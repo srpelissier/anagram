@@ -8,6 +8,7 @@ end
 @wordlist = makearray "./data/wordlist.txt"
 
 while endgame == false do
+
 	newword = false
 	def getletters(n)
 		alphabet = ("a" .. "z").to_a
@@ -21,10 +22,6 @@ while endgame == false do
 	top10 = []
 
 	def printranks(ranklist)
-		ranklist.sort_by! { |rank| rank[0] }
-		ranklist = ranklist.uniq { |rank| rank[0] }
-		ranklist.reverse!
-		ranklist = ranklist.take(10) if ranklist.length > 10
 
 		ranklist.each_index { |idx|
 			if idx == 9
@@ -40,8 +37,6 @@ while endgame == false do
 	def printletters(letters)
 		p "Letters: #{letters.join(" ")}"
 	end
-
-	#printletters(baseletters)
 
 	while newword == false do
 
@@ -75,6 +70,12 @@ while endgame == false do
 
 		if @check == true
 			top10 << [score,word]
+			p top10
+			top10.sort_by! { |rank| rank[0] }
+			p top10
+			top10 = top10.uniq { |rank| rank[1] }
+			top10.reverse!
+			top10 = top10.take(10) if top10.length > 10
 		end
 
 		printranks top10
@@ -83,7 +84,7 @@ while endgame == false do
 
 		resp = gets.chomp
 		case resp
-		when "C", "c", "\n"
+		when "C", "c"
 			newword = false
 		when "N", "n"
 			newword = true
@@ -93,8 +94,6 @@ while endgame == false do
 		end
 
 	end
-
-
 
 end
 
