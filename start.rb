@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 #start the game
 endgame = false
 
