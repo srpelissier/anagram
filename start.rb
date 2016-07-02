@@ -45,21 +45,21 @@ while endgame == false do
 		@check = true
 		printletters(baseletters)
 		puts "\nEnter a word: "
-		word = gets.chomp
+		word = gets.chomp.downcase
 
 		letters = word.chars.sort
 
 		letters.each { |letter|
-			if !baseletters.include? letter
+			if !baseletters.include? letter.downcase
 				@check = false
 				puts "\n#{letter} not found."
 			end
 		}
 
 		if @check == true
+			letters_copy = letters.dup
 
 			letters.each { |letter|
-				letters_copy = letters.dup
 				baseletters_copy = baseletters.dup
 				qty_letter = letters_copy.keep_if { |letter_copy| letter_copy == letter }.length
 				qty_baseletter = baseletters_copy.keep_if { |baseletter_copy| baseletter_copy == letter }.length
@@ -78,6 +78,14 @@ while endgame == false do
 		elsif @check == true
 			@check = false
 			puts "\n#{word} unknown."
+		end
+
+		if @check == true
+			top10.each { |topscore|
+				if topscore[1] == word
+					puts "\n#{word} has been proposed."
+				end
+			}
 		end
 
 		if @check == true
