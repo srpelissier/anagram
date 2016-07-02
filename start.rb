@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #start the game
-endgame = false
+end_game = false
 
 def makearray(file)
 	File.readlines(file).map {|line| line.chomp }
@@ -8,9 +8,9 @@ end
 
 @wordlist = makearray "./data/wordlist.txt"
 
-while endgame == false do
+while end_game == false do
 
-	newword = false
+	change_letters = false
 	def getletters(n)
 		alphabet = ("a" .. "z").to_a
 		ret = []
@@ -23,12 +23,12 @@ while endgame == false do
 	top10 = []
 
 	def printranks(ranklist)
-		puts
+		puts "\nScores:"
 		ranklist.each_index { |idx|
 			if idx == 9
-				puts "Rank ##{idx+1} -> Score:#{ranklist[idx][0]} Word:#{ranklist[idx][1]}"
+				puts "##{idx+1} -> #{ranklist[idx][0]} points (#{ranklist[idx][1]})"
 			else
-				puts "Rank #0#{idx+1} -> Score:#{ranklist[idx][0]} Word:#{ranklist[idx][1]}"
+				puts "#0#{idx+1} -> #{ranklist[idx][0]} points (#{ranklist[idx][1]})"
 			end
 		}
 	end
@@ -39,62 +39,67 @@ while endgame == false do
 		puts "\nLetters: #{letters.join(" ")}\n"
 	end
 
-	while newword == false do
+	while change_letters == false && end_game == false do
 
-		score = 0
-		@check = true
+		@word_is_valid = true
 		printletters(baseletters)
 		puts "\nEnter a word: "
 		word = gets.chomp.downcase
 
+		score = 0
+		msg = ""
+
 		letters = word.chars.sort
 
 		letters.each { |letter|
-			if !baseletters.include? letter.downcase
-				@check = false
-				puts "\n#{letter} not found."
+			if !baseletters.include? letter
+				@word_is_valid = false
+				msg += "\n#{letter} not found."
 			end
 		}
 
-		if @check == true
-			letters_copy = letters.dup
+		if @word_is_valid == true
 
 			letters.each { |letter|
+				letters_copy = letters.dup
 				baseletters_copy = baseletters.dup
 				qty_letter = letters_copy.keep_if { |letter_copy| letter_copy == letter }.length
 				qty_baseletter = baseletters_copy.keep_if { |baseletter_copy| baseletter_copy == letter }.length
 				if qty_letter > qty_baseletter
-					@check = false
+					@word_is_valid = false
+
 				end
 			}
 
-			if @check == false
-				puts "\nSome letter was used too many times."
-			end
+			msg += "\nYou used too many '#{letter}'." if @word_is_valid == false
+
 		end
 
-		if (@wordlist.include? word) && (@check == true)
+		if (@wordlist.include? word) && (@word_is_valid == true)
 			score = word.size
-		elsif @check == true
-			@check = false
-			puts "\n#{word} unknown."
+		elsif @word_is_valid == true
+			@word_is_valid = false
+			msg += "\n#{word} unknown."
 		end
 
-		if @check == true
+		if @word_is_valid == true
 			top10.each { |topscore|
 				if topscore[1] == word
-					puts "\n#{word} has been proposed."
+					@word_is_valid = false
+					msg += "\n#{word} has been proposed."
 				end
 			}
 		end
 
-		if @check == true
+		if @word_is_valid == true
 			top10 << [score,word]
 			top10.sort_by! { |rank| rank[0] }
 			top10 = top10.uniq { |rank| rank[1] }
 			top10.reverse!
-			top10 = top10.take(10) if top10.length > 10
+			top10 = top10.take(10)
 		end
+
+		puts "\n#{word} wins #{score} points.#{msg}"
 
 		printranks top10
 
@@ -103,12 +108,11 @@ while endgame == false do
 		resp = gets.chomp
 		case resp
 		when "A", "a"
-			newword = false
+			change_letters = false
 		when "L", "l"
-			newword = true
+			change_letters = true
 		else
-			newword = true
-			endgame = true
+			end_game = true
 		end
 
 	end
