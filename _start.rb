@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 #start the game
 endgame = false
 
@@ -47,37 +46,26 @@ while endgame == false do
 		puts "\nEnter a word: "
 		word = gets.chomp
 
-		letters = word.chars.sort
-
-		letters.each { |letter|
+		word.each_char { |letter|
 			if !baseletters.include? letter
 				@check = false
 				puts "\n#{letter} not found."
 			end
 		}
-
+=begin
 		if @check == true
-
+			letters = word.chars.sort
+			baseletters_copy = baseletters.dup
 			letters.each { |letter|
-				letters_copy = letters.dup
-				baseletters_copy = baseletters.dup
-				qty_letter = letters_copy.keep_if { |letter_copy| letter_copy == letter }.length
-				qty_baseletter = baseletters_copy.keep_if { |baseletter_copy| baseletter_copy == letter }.length
-				if qty_letter > qty_baseletter
-					@check = false
-				end
+				baseletters_copy.delete_at(baseletters.index(letter))
 			}
-
-			if @check == false
-				puts "\nSome letter was used too many times."
-			end
 		end
-
+=end
 		if (@wordlist.include? word) && (@check == true)
 			score = word.size
 		elsif @check == true
 			@check = false
-			puts "\n#{word} unknown."
+			puts "\n#{word} unknown"
 		end
 
 		if @check == true
@@ -90,11 +78,11 @@ while endgame == false do
 
 		printranks top10
 
-		puts "\nNew (A)ttempt) - New (L)etters?\n"
+		puts "\nNew (T)ry - New (L)etters?\n"
 
 		resp = gets.chomp
 		case resp
-		when "A", "a"
+		when "T", "t"
 			newword = false
 		when "L", "l"
 			newword = true
