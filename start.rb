@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 #start the game
-end_game = false
 
 def makearray(file)
 	File.readlines(file).map {|line| line.chomp }
@@ -9,36 +8,57 @@ end
 @wordlist = makearray "./data/wordlist.txt"
 letterlist = @wordlist.join { |word|
 	word.chomp
-}.chars
+}.chars # make an array with all letters
 alphabet_weights = Hash.new(0)
 letterlist.each do |v|
 	alphabet_weights[v] += 1
-end
+end # get the qty of each letter
 alphabet_weights.each { |k,v|
 	alphabet_weights[k] = (alphabet_weights[k].to_f/letterlist.length*1000).to_i
-}
-@alphabet = []
+} # approximation to generate the smallest set containing at least one of each letter
+  # (the rarest, q, occurs ~1/1000 times in "./data/wordlist.txt"
+	# out of 1,5 million letters).
+@alphabet = [] # custom alphabet
 ("a" .. "z").to_a.each { |alpha|
 	@alphabet << Array.new(alphabet_weights[alpha], alpha)
 }
-@alphabet.flatten!
+@alphabet.flatten! # each letter occurs with the same frequency
+									 # than in the file "./data/wordlist.txt"
+									 # length ~1000 letters
 
+end_game = false
 while end_game == false do
 
-	change_letters = false
+	top10 = [] # best scores
+
 	def getletters(n)
 
 		ret = []
 		for i in 0...n do
-			ret << @alphabet.sample
+			ret << @alphabet.sample # n letters out of ~1000
 		end
 		ret
 
 	end
 
-	top10 = []
+	def banner()
+		"+------------------------------------------------------------+\n|                       #{["a ", "n ", "a ", "g ", "r ", "a ", "m "].shuffle.join}                       |\n+------------------------------------------------------------+"
+	end
 
-	def printranks(ranklist)
+	baseletters = getletters(15)
+
+	def print_screen(letters) # draws the screen
+		copy = []
+		letters.each { |l|
+			copy << l.upcase
+		}
+		system "clear"
+		puts banner
+		puts
+		puts "\t\t#{copy.join(" ")}\n"
+	end
+
+	def printranks(ranklist) # draws the scoreboard
 		puts
 		ranklist.each_index { |idx|
 			case idx
@@ -50,48 +70,33 @@ while end_game == false do
 		}
 	end
 
-	def banner()
-		"+------------------------------------------------------------+\n|                       #{["a ", "n ", "a ", "g ", "r ", "a ", "m "].shuffle.join}                       |\n+------------------------------------------------------------+"
-	end
-
-	baseletters = getletters(15)
-
-	def printletters(letters)
-		copy = []
-		letters.each { |l|
-			copy << l.upcase
-		}
-		system "clear"
-		puts banner
-		puts
-		puts "\t\t#{copy.join(" ")}\n"
-	end
-
-	while change_letters == false && end_game == false do
+	change_letters = false # true if the player wants a new set of base letters
+	while change_letters == false && end_game == false do # game 'really' starts
 
 		score = 0
-		msg = ""
-		error = ""
+		msg = "" # to be displayed at end of game
+		error = "" # to hold special game errors
+							 # complements 'msg'
 
-		printletters(baseletters)
+		print_screen(baseletters)
 
 		puts "\n...\nEnter a word: "
 		word = gets.chomp.downcase
 
-		if word == ""
+		if word == "" # word?
 			msg += "There was no word!"
 			@word_is_valid = false
 		else
 			@word_is_valid = true
 		end
 
-		if @word_is_valid
+		if @word_is_valid # any_letter?
 
 			letters = word.chars.sort
 
 			letters.each { |letter|
 				unless baseletters.include? letter
-					# if a letter in the prposed word
+					# if a letter in the proposed word
 					# is not in the list of available letters
 					@word_is_valid = false
 					error = letter.upcase
@@ -100,7 +105,7 @@ while end_game == false do
 			msg += "'#{error}' not found." unless @word_is_valid
 		end
 
-		if @word_is_valid
+		if @word_is_valid # all_letters?
 
 			letters.each { |letter|
 				# calculates the amount of each letter found in
@@ -122,7 +127,7 @@ while end_game == false do
 			msg += "You used too many '#{error}'." unless @word_is_valid
 		end
 
-		if @word_is_valid
+		if @word_is_valid # in_dic?
 
 			if (@wordlist.include? word)
 				# when the word is found in the file
@@ -136,7 +141,7 @@ while end_game == false do
 			msg += "'#{word.upcase}' unknown." unless @word_is_valid
 		end
 
-		if @word_is_valid
+		if @word_is_valid # new?
 
 			top10.each { |topscore|
 				if topscore[1] == word
